@@ -1,4 +1,4 @@
-package com.br.pdvpostodecombustivel.domain.entity;
+package com.br.pdvpostodecombustivel.api.domain.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;

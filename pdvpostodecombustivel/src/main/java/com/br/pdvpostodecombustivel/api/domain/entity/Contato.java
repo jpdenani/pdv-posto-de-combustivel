@@ -1,4 +1,4 @@
-package com.br.pdvpostodecombustivel.domain.entity;
+package com.br.pdvpostodecombustivel.api.domain.entity;
 
 public class Contato {
     //atributos
