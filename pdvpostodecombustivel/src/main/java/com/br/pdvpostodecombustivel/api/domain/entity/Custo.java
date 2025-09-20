@@ -1,13 +1,30 @@
 package com.br.pdvpostodecombustivel.api.domain.entity;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
+@Entity
+
+@Table(name = "pessoa")
 
 public class Custo {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
+    @Column(nullable = false)
     private Double imposto;
+
+    @Column(nullable = false)
     private Double custoVariavel;
+
+    @Column(nullable = false)
     private Double custoFixo;
+
+    @Column(nullable = false)
     private Double margemLucro;
+
+    @Column(nullable = false)
     private Date dataProcesasmento;
 
     public Custo (Double imposto, Double custoVariavel, Double custoFixo, Double margemLucro, Date dataProcesasmento){

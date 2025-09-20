@@ -1,10 +1,24 @@
 package com.br.pdvpostodecombustivel.api.domain.entity;
 
+import jakarta.persistence.*;
+
+@Entity
+
+@Table(name = "pessoa")
+
 public class Contato {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    private long id;
     //atributos
+    @Column(length = 15, nullable = false)
+
     private String telefone;
+    @Column(length = 320, nullable = false)
 
     private String email;
+    @Column(length = 50, nullable = false)
 
     private String endereco;
     //construtor

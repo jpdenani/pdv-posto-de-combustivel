@@ -5,5 +5,5 @@ public record PessoaResponse(
         Long id,
         String nomeCompleto,
         String cpfCnpj,
-        Long numeroCtps
-){}
+        Long numeroCtps,
+        java.time.LocalDate dataNascimento){}

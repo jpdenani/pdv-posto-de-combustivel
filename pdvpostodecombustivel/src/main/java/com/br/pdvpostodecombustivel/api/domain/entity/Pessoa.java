@@ -1,5 +1,6 @@
 package com.br.pdvpostodecombustivel.api.domain.entity;
 
+import com.br.pdvpostodecombustivel.enums.TipoPessoa;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.NotBlank;
@@ -7,37 +8,42 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 @Entity
-
 @Table(name = "pessoa")
-
 public class Pessoa {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-       //atributos
     private Long id;
 
-    @Column(length = 200, nullable = false)
+    @Column(name = "nome_completo", length = 200, nullable = false)
     private String nomeCompleto;
-    @Column(length = 14, nullable = false)
+
+    @Column(name = "cpf_cnpj", length = 14, nullable = false)
     private String cpfCnpj;
-    @Column(length = 12)
+
+    @Column(name = "numero_ctps", length = 12)
     private Long numeroCtps;
-    @Column(length = 14, nullable = false)
+
+    @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
+    @Column(name = "tipo_pessoa", nullable = false, length = 15)
+    private TipoPessoa tipoPessoa;
 
-    //construtor
-    public Pessoa (String nomeCompleto,  String cpfCNPJ, LocalDate dataNascimento, Long numeroCtps) {
+    // Construtores
+    public Pessoa(){
+    }
+
+    public Pessoa(String nomeCompleto, String cpfCNPJ, LocalDate dataNascimento, Long numeroCtps, TipoPessoa tipoPessoa) {
         this.nomeCompleto = nomeCompleto;
         this.cpfCnpj = cpfCNPJ;
         this.dataNascimento = dataNascimento;
         this.numeroCtps = numeroCtps;
+        this.tipoPessoa = tipoPessoa;
     }
-    public Pessoa (){
 
-    }
-    //getters //setters
-    public Long getId (){
+    // Getters e Setters
+    public Long getId() {
         return id;
     }
 
@@ -45,28 +51,43 @@ public class Pessoa {
         this.id = id;
     }
 
-    public String getNomeCompleto(){
+    public String getNomeCompleto() {
         return nomeCompleto;
     }
-    public void setNomeCompleto (String nomeCompleto){
+
+    public void setNomeCompleto(String nomeCompleto) {
         this.nomeCompleto = nomeCompleto;
     }
-    public String getCpfCnpj(){
+
+    public String getCpfCnpj() {
         return cpfCnpj;
     }
+
     public void setCpfCnpj(String cpfCnpj) {
         this.cpfCnpj = cpfCnpj;
     }
-    public LocalDate getDataNascimento(){
+
+    public LocalDate getDataNascimento() {
         return dataNascimento;
     }
+
     public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
-    public Long getNumeroCtps(){
+
+    public Long getNumeroCtps() {
         return numeroCtps;
     }
+
     public void setNumeroCtps(Long numeroCtps) {
         this.numeroCtps = numeroCtps;
+    }
+
+    public TipoPessoa getTipoPessoa() {
+        return tipoPessoa;
+    }
+
+    public void setTipoPessoa(TipoPessoa tipoPessoa) {
+        this.tipoPessoa = tipoPessoa;
     }
 }

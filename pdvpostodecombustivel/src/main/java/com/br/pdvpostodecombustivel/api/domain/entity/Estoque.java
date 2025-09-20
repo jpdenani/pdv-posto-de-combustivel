@@ -1,14 +1,32 @@
 package com.br.pdvpostodecombustivel.api.domain.entity;
 
+import jakarta.persistence.*;
+
+
 import java.math.BigDecimal;
 import java.util.Date;
+@Entity
+
+@Table(name = "pessoa")
 
 public class Estoque {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(nullable = false)
 
     private BigDecimal quantidade;
+    @Column(length = 15, nullable = false)
+
     private String localTanque;
+    @Column(length = 50, nullable = false)
+
     private String localEndereco;
+    @Column(length = 4, nullable = false)
+
     private String loteFabricacao;
+    @Column(nullable = false)
+
     private Date dataValidade;
 
     public Estoque ( BigDecimal quantidade, String localTanque, String localEndereco, String loteFabricacao, Date dataValidade){
