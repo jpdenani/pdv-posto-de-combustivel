@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class PessoaService {
 
+    // implementa a interface repository de pessoa
     private final PessoaRepository repository;
+
 
     public PessoaService(PessoaRepository repository) {
         this.repository = repository;
@@ -22,12 +24,11 @@ public class PessoaService {
 
     // CREATE
     public PessoaResponse create(PessoaRequest req) {
-        validarUnicidadeCpfCnpj(req.cpfCnpj(), null);
-        Pessoa nova = toEntity(req);
-        return toResponse(repository.save(nova));
+        Pessoa novaPessoa = toEntity(req);
+        return toResponse(repository.save(novaPessoa));
     }
 
-    // READ by ID
+    // READ by ID - validar a utilização desse método
     @Transactional(readOnly = true)
     public PessoaResponse getById(Long id) {
         Pessoa p = repository.findById(id)
@@ -50,7 +51,7 @@ public class PessoaService {
         return repository.findAll(pageable).map(this::toResponse);
     }
 
-    // UPDATE (PUT) - substitui todos os campos
+    // UPDATE  - substitui todos os campos
     public PessoaResponse update(Long id, PessoaRequest req) {
         Pessoa p = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Pessoa não encontrada. id=" + id));
@@ -72,14 +73,14 @@ public class PessoaService {
         Pessoa p = repository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Pessoa não encontrada. id=" + id));
 
-        if (req.nomeCompleto() != null) p.setNomeCompleto(req.nomeCompleto());
+        if (req.nomeCompleto() != null)  p.setNomeCompleto(req.nomeCompleto());
         if (req.cpfCnpj() != null) {
             if (!req.cpfCnpj().equals(p.getCpfCnpj())) {
                 validarUnicidadeCpfCnpj(req.cpfCnpj(), id);
             }
             p.setCpfCnpj(req.cpfCnpj());
         }
-        if (req.numeroCtps() != null) p.setNumeroCtps(req.numeroCtps());
+        if (req.numeroCtps() != null)    p.setNumeroCtps(req.numeroCtps());
         if (req.dataNascimento() != null) p.setDataNascimento(req.dataNascimento());
 
         return toResponse(repository.save(p));
@@ -104,17 +105,16 @@ public class PessoaService {
 
     private Pessoa toEntity(PessoaRequest req) {
         return new Pessoa(
-                        req.nomeCompleto(),
-                        req.cpfCnpj(),
-                req.dataNascimento(),
+                req.nomeCompleto(),
+                req.cpfCnpj(),
                 req.numeroCtps(),
-                        req.tipoPessoa()
-                );
+                req.dataNascimento(),
+                req.tipoPessoa()
+        );
     }
 
     private PessoaResponse toResponse(Pessoa p) {
         return new PessoaResponse(
-                p.getId(),
                 p.getNomeCompleto(),
                 p.getCpfCnpj(),
                 p.getNumeroCtps(),
