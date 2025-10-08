@@ -23,7 +23,7 @@ public class Pessoa {
     @NotBlank
     @Size(max = 200)
     @Column(name = "nome_completo", nullable = false, length = 200)
-    private String nomeCompleto;
+    private String nome;
 
     // CPF (11) ou CNPJ (14). Deixo 20 para folga (hífens/pontos, se algum dia usar formatado).
     @NotBlank
@@ -48,12 +48,12 @@ public class Pessoa {
     /** Construtor JPA */
     protected Pessoa() {}
 
-    public Pessoa(String nomeCompleto,
+    public Pessoa(String nome,
                   String cpfCnpj,
                   Long numeroCtps,
                   LocalDate dataNascimento,
                   TipoPessoa tipoPessoa) {
-        this.nomeCompleto = nomeCompleto;
+        this.nome = nome;
         this.cpfCnpj = cpfCnpj;
         this.numeroCtps = numeroCtps;
         this.dataNascimento = dataNascimento;
@@ -64,8 +64,8 @@ public class Pessoa {
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getNomeCompleto() { return nomeCompleto; }
-    public void setNomeCompleto(String nomeCompleto) { this.nomeCompleto = nomeCompleto; }
+    public String getNomeCompleto() { return nome; }
+    public void setNomeCompleto(String nomeCompleto) { this.nome = nome; }
 
     public String getCpfCnpj() { return cpfCnpj; }
     public void setCpfCnpj(String cpfCnpj) { this.cpfCnpj = cpfCnpj; }
