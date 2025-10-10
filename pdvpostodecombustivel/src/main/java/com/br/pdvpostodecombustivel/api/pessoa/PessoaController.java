@@ -1,10 +1,12 @@
 package com.br.pdvpostodecombustivel.api.pessoa;
 
+import com.br.pdvpostodecombustivel.api.domain.repository.PessoaRepository;
 import com.br.pdvpostodecombustivel.api.pessoa.dto.PessoaRequest;
 import com.br.pdvpostodecombustivel.api.pessoa.dto.PessoaResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,8 +56,12 @@ public class PessoaController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        service.delete(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        boolean excluido = service.excluirPessoa(id); // chama o service
+        if (excluido) {
+            return ResponseEntity.noContent().build(); // HTTP 204
+        } else {
+            return ResponseEntity.notFound().build(); // HTTP 404
+        }
     }
 }
