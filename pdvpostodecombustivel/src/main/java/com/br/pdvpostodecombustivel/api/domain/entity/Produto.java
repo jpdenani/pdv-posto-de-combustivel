@@ -33,6 +33,11 @@ public class Produto {
         this.fornecedor = fornecedor;
         this.marca = marca;
     }
+
+    public long getId() {
+        return id;
+    }
+
     public String getNome(){
         return nome;
     }

@@ -27,10 +27,15 @@ public class Preco {
         this.dataAlteracao = dataAlteracao;
         this.horaAlteracao = horaAlteracao;
     }
+
+    public long getId() {
+        return id;
+    }
+
     public BigDecimal getValor(){
         return valor;
     }
-    public void setNome (BigDecimal valor){
+    public void setValor(BigDecimal valor){
         this.valor = valor;
     }
     public String getDataAlteracao(){

@@ -1,4 +1,4 @@
-package com.br.pdvpostodecombustivel.api.pessoa.dto;
+package com.br.pdvpostodecombustivel.api.produto.dto;
 
 public record ProdutoRequest(
         String marca,

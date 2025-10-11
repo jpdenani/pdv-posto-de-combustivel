@@ -36,6 +36,11 @@ public class Estoque {
         this.loteFabricacao = loteFabricacao;
         this.dataValidade = dataValidade;
     }
+
+    public long getId() {
+        return id;
+    }
+
     public BigDecimal getQuantidade(){
         return quantidade;
     }

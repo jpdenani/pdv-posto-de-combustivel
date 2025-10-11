@@ -9,7 +9,8 @@ import jakarta.persistence.*;
 public class Acesso {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
+    private long id;
     //atributos
     @Column(length = 50, nullable = false)
 
@@ -20,11 +21,15 @@ public class Acesso {
     private String senha;
 
     //construtor
-    public Acesso (String nomeCompleto, String email) {
+    public Acesso (String usuario, String senha) {
         this.usuario = usuario;
-        this.senha = email;
+        this.senha = senha;
     }
     //getters //setters
+    public long getId(){
+        return id;
+    }
+
     public String getUsuario(){
         return usuario;
     }

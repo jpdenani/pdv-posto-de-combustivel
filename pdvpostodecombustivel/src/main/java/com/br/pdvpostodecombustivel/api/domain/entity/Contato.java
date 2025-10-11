@@ -28,6 +28,10 @@ public class Contato {
         this.endereco = endereco;
     }
     //getters //setters
+    public long getId(){
+        return id;
+    }
+
     public String getTelefone(){
         return telefone;
     }

@@ -25,15 +25,20 @@ public class Custo {
     private Double margemLucro;
 
     @Column(nullable = false)
-    private Date dataProcesasmento;
+    private Date dataProcessamento;
 
     public Custo (Double imposto, Double custoVariavel, Double custoFixo, Double margemLucro, Date dataProcesasmento){
         this.imposto = imposto;
         this.custoVariavel = custoVariavel;
         this.custoFixo = custoFixo;
         this.margemLucro = margemLucro;
-        this.dataProcesasmento = dataProcesasmento;
+        this.dataProcessamento = dataProcessamento;
     }
+
+    public long getId() {
+        return id;
+    }
+
     public Double getImposto(){
         return imposto;
     }
@@ -63,11 +68,11 @@ public class Custo {
         this.margemLucro = margemLucro;
     }
 
-    public void setDataProcesasmento(Date dataProcesasmento) {
-        this.dataProcesasmento = dataProcesasmento;
+    public void setDataProcessamento(Date dataProcessamento) {
+        this.dataProcessamento = dataProcessamento;
     }
 
-    public Date getDataProcesasmento() {
-        return dataProcesasmento;
+    public Date getDataProcessamento() {
+        return dataProcessamento;
     }
 }

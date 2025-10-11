@@ -1,4 +1,4 @@
-package com.br.pdvpostodecombustivel.api.pessoa.dto;
+package com.br.pdvpostodecombustivel.api.preco.dto;
 
 
 import java.math.BigDecimal;

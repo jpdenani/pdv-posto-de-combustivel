@@ -1,10 +1,11 @@
-package com.br.pdvpostodecombustivel.api.pessoa.dto;
+package com.br.pdvpostodecombustivel.api.preco.dto;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 public record PrecoResponse(
         Long id,
         BigDecimal valor,
         String dataAlteracao,
-        String horaAlteracao
+        Date horaAlteracao
 ){}
