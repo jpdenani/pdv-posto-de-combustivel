@@ -22,23 +22,23 @@ public class AcessoService {
 
     // Criar um novo acesso
     public AcessoResponse create(AcessoRequest req) {
-        Acesso acesso = new Acesso(req.usuario(), req.senha()); // id será gerado pelo JPA
+        Acesso acesso = new Acesso(req.usuario(), req.senha(), req.TipoAcesso()); // id será gerado pelo JPA
         repository.save(acesso);
-        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha());
+        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha(), acesso.getTipoAcesso());
     }
 
     // Buscar por id
     public AcessoResponse getById(long id) {
         Acesso acesso = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Acesso não encontrado"));
-        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha());
+        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha(), acesso.getTipoAcesso());
     }
 
     // Buscar por usuário
     public AcessoResponse getByUsuario(String usuario) {
         Acesso acesso = repository.findByUsuario(usuario)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha());
+        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha(), acesso.getTipoAcesso());
     }
 
     // Listar acessos com paginação simples
@@ -46,7 +46,7 @@ public class AcessoService {
         return repository.findAll(Sort.by(dir, sortBy)).stream()
                 .skip(page * size)
                 .limit(size)
-                .map(a -> new AcessoResponse(a.getId(), a.getUsuario(), a.getSenha()))
+                .map(a -> new AcessoResponse(a.getId(), a.getUsuario(), a.getSenha(), a.getTipoAcesso()))
                 .collect(Collectors.toList());
     }
 
@@ -57,7 +57,7 @@ public class AcessoService {
         acesso.setUsuario(req.usuario());
         acesso.setSenha(req.senha());
         repository.save(acesso);
-        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha());
+        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha(), acesso.getTipoAcesso());
     }
 
     // Atualização parcial
@@ -67,7 +67,7 @@ public class AcessoService {
         if (req.usuario() != null) acesso.setUsuario(req.usuario());
         if (req.senha() != null) acesso.setSenha(req.senha());
         repository.save(acesso);
-        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha());
+        return new AcessoResponse(acesso.getId(), acesso.getUsuario(), acesso.getSenha(), acesso.getTipoAcesso());
     }
 
     // Deletar por id

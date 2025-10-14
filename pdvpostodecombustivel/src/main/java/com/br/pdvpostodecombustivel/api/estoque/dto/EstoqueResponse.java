@@ -1,5 +1,7 @@
 package com.br.pdvpostodecombustivel.api.estoque.dto;
 
+import com.br.pdvpostodecombustivel.enums.TipoEstoque;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,6 +11,7 @@ public record EstoqueResponse(
         String localTanque,
         String localEndereco,
         String loteFabricacao,
-        Date dataValidade
+        Date dataValidade,
+        TipoEstoque tipoEstoque
 ) {
 }

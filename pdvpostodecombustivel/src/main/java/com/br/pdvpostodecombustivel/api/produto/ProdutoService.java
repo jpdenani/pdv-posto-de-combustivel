@@ -22,7 +22,7 @@ public class ProdutoService {
 
     // Criar produto
     public ProdutoResponse create(ProdutoRequest req) {
-        Produto produto = new Produto(req.nome(), req.referencia(), req.categoria(), req.fornecedor(), req.marca());
+        Produto produto = new Produto(req.nome(), req.referencia(), req.categoria(), req.fornecedor(), req.marca(), req.TipoProduto());
         repository.save(produto);
         return mapToResponse(produto);
     }
@@ -52,6 +52,7 @@ public class ProdutoService {
         produto.setCategoria(req.categoria());
         produto.setFornecedor(req.fornecedor());
         produto.setMarca(req.marca());
+        produto.setTipoProduto(req.TipoProduto());
         repository.save(produto);
         return mapToResponse(produto);
     }
@@ -65,6 +66,7 @@ public class ProdutoService {
         if (req.categoria() != null) produto.setCategoria(req.categoria());
         if (req.fornecedor() != null) produto.setFornecedor(req.fornecedor());
         if (req.marca() != null) produto.setMarca(req.marca());
+        if (req.TipoProduto() != null) produto.setTipoProduto(req.TipoProduto());
         repository.save(produto);
         return mapToResponse(produto);
     }
@@ -80,6 +82,6 @@ public class ProdutoService {
     }
 
     private ProdutoResponse mapToResponse(Produto p) {
-        return new ProdutoResponse(p.getId(), p.getNome(), p.getReferencia(), p.getCategoria(), p.getFornecedor(), p.getMarca());
+        return new ProdutoResponse(p.getId(), p.getNome(), p.getReferencia(), p.getCategoria(), p.getFornecedor(), p.getMarca(), p.getTipoProduto());
     }
 }

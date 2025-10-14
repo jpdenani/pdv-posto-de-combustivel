@@ -27,7 +27,8 @@ public class EstoqueService {
                 req.localTanque(),
                 req.localEndereco(),
                 req.loteFabricacao(),
-                req.dataValidade()
+                req.dataValidade(),
+                req.tipoEstoque()
         );
         repository.save(estoque);
         return mapToResponse(estoque);
@@ -58,6 +59,7 @@ public class EstoqueService {
         estoque.setLocalEndereco(req.localEndereco());
         estoque.setLoteFabricacao(req.loteFabricacao());
         estoque.setDataValidade(req.dataValidade());
+        estoque.setTipoEstoque(req.tipoEstoque());
         repository.save(estoque);
         return mapToResponse(estoque);
     }
@@ -71,6 +73,7 @@ public class EstoqueService {
         if (req.localEndereco() != null) estoque.setLocalEndereco(req.localEndereco());
         if (req.loteFabricacao() != null) estoque.setLoteFabricacao(req.loteFabricacao());
         if (req.dataValidade() != null) estoque.setDataValidade(req.dataValidade());
+        if (req.tipoEstoque() != null) estoque.setTipoEstoque(req.tipoEstoque());
         repository.save(estoque);
         return mapToResponse(estoque);
     }
@@ -93,7 +96,8 @@ public class EstoqueService {
                 e.getLocalTanque(),
                 e.getLocalEndereco(),
                 e.getLoteFabricacao(),
-                e.getDataValidade()
+                e.getDataValidade(),
+                e.getTipoEstoque()
         );
     }
 }
