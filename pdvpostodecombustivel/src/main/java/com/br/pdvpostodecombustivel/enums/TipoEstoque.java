@@ -3,10 +3,10 @@ package com.br.pdvpostodecombustivel.enums;
 public enum TipoEstoque {
 
 
-    EMFALTA("Indisponível"),
-    CRÍTICO("Crítico"),
+    FALTA("Indisponível"),
+    CRITICO("Crítico"),
     BAIXO("Baixo"),
-    NAMÉDIA("Disponível");
+    MÉDIO("Disponível");
 
     private final String descricao;
 

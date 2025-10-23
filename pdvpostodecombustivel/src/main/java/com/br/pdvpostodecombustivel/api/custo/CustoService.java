@@ -20,15 +20,14 @@ public class CustoService {
         this.repository = repository;
     }
 
-    // Criar um novo custo
     public CustoResponse create(CustoRequest req) {
-        Custo custo = new Custo(req.imposto(), req.custoVariavel(), req.custoFixo(), req.margemLucro(), req.dataProcessamento());
-        repository.save(custo);
+        Custo custo = new Custo(req.imposto(), req.custoVariavel(), req.custoFixo(),
+                req.margemLucro(), req.dataProcessamento());
+        custo = repository.save(custo);
         return new CustoResponse(custo.getId(), custo.getImposto(), custo.getCustoVariavel(),
                 custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
     }
 
-    // Buscar por id
     public CustoResponse getById(long id) {
         Custo custo = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Custo não encontrado"));
@@ -36,45 +35,43 @@ public class CustoService {
                 custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
     }
 
-    // Listar custos com paginação
     public List<CustoResponse> list(int page, int size, String sortBy, Sort.Direction dir) {
         return repository.findAll(Sort.by(dir, sortBy)).stream()
-                .skip(page * size)
+                .skip((long) page * size)
                 .limit(size)
                 .map(c -> new CustoResponse(c.getId(), c.getImposto(), c.getCustoVariavel(),
                         c.getCustoFixo(), c.getMargemLucro(), c.getDataProcessamento()))
                 .collect(Collectors.toList());
     }
 
-    // Atualizar custo
     public CustoResponse update(long id, CustoRequest req) {
         Custo custo = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Custo não encontrado"));
-        custo.setNome(req.imposto()); // corrigir setter correto
+        // ✅ CORRIGIDO: agora usa setImposto ao invés de setNome
+        custo.setImposto(req.imposto());
         custo.setCustoVariavel(req.custoVariavel());
         custo.setCustoFixo(req.custoFixo());
         custo.setMargemLucro(req.margemLucro());
         custo.setDataProcessamento(req.dataProcessamento());
-        repository.save(custo);
+        custo = repository.save(custo);
         return new CustoResponse(custo.getId(), custo.getImposto(), custo.getCustoVariavel(),
                 custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
     }
 
-    // Atualização parcial
     public CustoResponse patch(long id, CustoRequest req) {
         Custo custo = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Custo não encontrado"));
-        if (req.imposto() != null) custo.setNome(req.imposto());
+        // ✅ CORRIGIDO: agora usa setImposto ao invés de setNome
+        if (req.imposto() != null) custo.setImposto(req.imposto());
         if (req.custoVariavel() != null) custo.setCustoVariavel(req.custoVariavel());
         if (req.custoFixo() != null) custo.setCustoFixo(req.custoFixo());
         if (req.margemLucro() != null) custo.setMargemLucro(req.margemLucro());
         if (req.dataProcessamento() != null) custo.setDataProcessamento(req.dataProcessamento());
-        repository.save(custo);
+        custo = repository.save(custo);
         return new CustoResponse(custo.getId(), custo.getImposto(), custo.getCustoVariavel(),
                 custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
     }
 
-    // Deletar por id
     public boolean delete(long id) {
         Optional<Custo> custoOpt = repository.findById(id);
         if (custoOpt.isPresent()) {

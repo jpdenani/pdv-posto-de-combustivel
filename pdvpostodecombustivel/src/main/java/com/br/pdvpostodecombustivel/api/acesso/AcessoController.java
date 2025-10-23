@@ -1,16 +1,13 @@
+// ========== AcessoController.java ==========
 package com.br.pdvpostodecombustivel.api.acesso;
 
-import com.br.pdvpostodecombustivel.api.acesso.dto.AcessoRequest;
-import com.br.pdvpostodecombustivel.api.acesso.dto.AcessoResponse;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
+import com.br.pdvpostodecombustivel.api.domain.entity.Acesso;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/acessos")
+@RequestMapping("/api/v1/acessos")
 public class AcessoController {
 
     private final AcessoService service;
@@ -20,45 +17,38 @@ public class AcessoController {
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public AcessoResponse create(@RequestBody AcessoRequest req) {
-        return service.create(req);
-    }
-
-    @GetMapping("/{id}")
-    public AcessoResponse getById(@PathVariable long id) {
-        return service.getById(id);
-    }
-
-    @GetMapping("/usuario/{usuario}")
-    public AcessoResponse getByUsuario(@PathVariable String usuario) {
-        return service.getByUsuario(usuario);
+    public Acesso create(@RequestBody Acesso acesso) {
+        return service.create(acesso);
     }
 
     @GetMapping
-    public List<AcessoResponse> list(@RequestParam(defaultValue = "0") int page,
-                                     @RequestParam(defaultValue = "10") int size,
-                                     @RequestParam(defaultValue = "id") String sortBy,
-                                     @RequestParam(defaultValue = "ASC") Sort.Direction dir) {
-        return service.list(page, size, sortBy, dir);
+    public List<Acesso> list() {
+        return service.listAll();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Acesso> getById(@PathVariable Long id) {
+        return service.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public AcessoResponse update(@PathVariable long id, @RequestBody AcessoRequest req) {
-        return service.update(id, req);
-    }
-
-    @PatchMapping("/{id}")
-    public AcessoResponse patch(@PathVariable long id, @RequestBody AcessoRequest req) {
-        return service.patch(id, req);
+    public ResponseEntity<Acesso> update(@PathVariable Long id, @RequestBody Acesso acesso) {
+        try {
+            Acesso updated = service.update(id, acesso);
+            return ResponseEntity.ok(updated);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        boolean excluido = service.delete(id);
-        if (excluido) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        try {
+            service.delete(id);
             return ResponseEntity.noContent().build();
-        } else {
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
     }

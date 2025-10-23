@@ -3,50 +3,57 @@ package com.br.pdvpostodecombustivel.api.domain.entity;
 import jakarta.persistence.*;
 
 @Entity
-
-@Table(name = "pessoa")
-
+@Table(name = "contato") // ❌ ESTAVA "pessoa" - CORRIGIDO!
 public class Contato {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private long id;
-    //atributos
     @Column(length = 15, nullable = false)
-
     private String telefone;
+
     @Column(length = 320, nullable = false)
-
     private String email;
-    @Column(length = 50, nullable = false)
 
+    @Column(length = 255, nullable = false)
     private String endereco;
-    //construtor
-    public Contato (String nomeCompleto, String email, String endereco) {
+
+    // ✅ CONSTRUTOR VAZIO (JPA precisa!)
+    public Contato() {}
+
+    // ✅ CONSTRUTOR CORRIGIDO (estava com nomeCompleto)
+    public Contato(String telefone, String email, String endereco) {
         this.telefone = telefone;
         this.email = email;
         this.endereco = endereco;
     }
-    //getters //setters
-    public long getId(){
+
+    // Getters e Setters
+    public Long getId() {
         return id;
     }
 
-    public String getTelefone(){
+    public String getTelefone() {
         return telefone;
     }
-    public void setTelefone(String telefone){
+
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
-    public String getEmail(){
+
+    public String getEmail() {
         return email;
     }
+
     public void setEmail(String email) {
         this.email = email;
     }
-    public String getEndereco(){
+
+    public String getEndereco() {
         return endereco;
     }
+
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }

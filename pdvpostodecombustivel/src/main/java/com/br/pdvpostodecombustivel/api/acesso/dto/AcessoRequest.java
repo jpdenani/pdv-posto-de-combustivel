@@ -5,7 +5,7 @@ import com.br.pdvpostodecombustivel.enums.TipoAcesso;
 public record AcessoRequest(
         String usuario,
         String senha,
-        TipoAcesso TipoAcesso
+        TipoAcesso tipoAcesso
 ) {
 
 }

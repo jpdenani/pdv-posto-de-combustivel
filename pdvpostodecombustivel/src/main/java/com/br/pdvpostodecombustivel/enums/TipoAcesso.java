@@ -3,8 +3,8 @@ package com.br.pdvpostodecombustivel.enums;
 public enum TipoAcesso {
 
 
-    ADMINISTRADO("Administrador"),
-    FUNCIONÁRIO("Funcionário");
+    ADMINISTRADOR("Administrador"),
+    FUNCIONARIO("Funcionário");
 
     private final String descricao;
 
