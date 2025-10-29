@@ -7,38 +7,38 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
-@Table(name = "estoque") // Corrigido
+@Table(name = "estoque")
 public class Estoque {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id; // ✅ Mudou de long para Long
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal quantidade;
 
-    @Column(length = 15, nullable = false)
+    @Column(length = 50, nullable = false)
     private String localTanque;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 100, nullable = false)
     private String localEndereco;
 
-    @Column(length = 4, nullable = false)
+    @Column(length = 20, nullable = false)
     private String loteFabricacao;
 
+    @Temporal(TemporalType.DATE)
     @Column(nullable = false)
     private Date dataValidade;
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_estoque", nullable = false, length = 15)
+    @Column(name = "tipo_estoque", nullable = false, length = 20)
     private TipoEstoque tipoEstoque;
 
-    // Construtor vazio
     public Estoque() {}
 
-    // Construtor completo
-    public Estoque(BigDecimal quantidade, String localTanque, String localEndereco, String loteFabricacao, Date dataValidade, TipoEstoque tipoEstoque){
+    public Estoque(BigDecimal quantidade, String localTanque, String localEndereco,
+                   String loteFabricacao, Date dataValidade, TipoEstoque tipoEstoque) {
         this.quantidade = quantidade;
         this.localTanque = localTanque;
         this.localEndereco = localEndereco;
@@ -48,17 +48,23 @@ public class Estoque {
     }
 
     // Getters e Setters
-    public long getId() { return id; }
+    public Long getId() { return id; }
+
     public BigDecimal getQuantidade() { return quantidade; }
     public void setQuantidade(BigDecimal quantidade) { this.quantidade = quantidade; }
+
     public String getLocalTanque() { return localTanque; }
     public void setLocalTanque(String localTanque) { this.localTanque = localTanque; }
+
     public String getLocalEndereco() { return localEndereco; }
     public void setLocalEndereco(String localEndereco) { this.localEndereco = localEndereco; }
+
     public String getLoteFabricacao() { return loteFabricacao; }
     public void setLoteFabricacao(String loteFabricacao) { this.loteFabricacao = loteFabricacao; }
+
     public Date getDataValidade() { return dataValidade; }
     public void setDataValidade(Date dataValidade) { this.dataValidade = dataValidade; }
+
     public TipoEstoque getTipoEstoque() { return tipoEstoque; }
     public void setTipoEstoque(TipoEstoque tipoEstoque) { this.tipoEstoque = tipoEstoque; }
 }

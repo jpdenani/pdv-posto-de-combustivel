@@ -20,52 +20,46 @@ public class PrecoService {
         this.repository = repository;
     }
 
-    // Criar novo preço
     public PrecoResponse create(PrecoRequest req) {
         Preco preco = new Preco(req.valor(), req.dataAlteracao(), req.horaAlteracao());
-        repository.save(preco);
+        preco = repository.save(preco);
         return mapToResponse(preco);
     }
 
-    // Buscar por id
     public PrecoResponse getById(long id) {
         Preco preco = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Preço não encontrado"));
         return mapToResponse(preco);
     }
 
-    // Listar preços
     public List<PrecoResponse> list(int page, int size, String sortBy, Sort.Direction dir) {
         return repository.findAll(Sort.by(dir, sortBy)).stream()
-                .skip(page * size)
+                .skip((long) page * size)
                 .limit(size)
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Atualizar preço
     public PrecoResponse update(long id, PrecoRequest req) {
         Preco preco = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Preço não encontrado"));
         preco.setValor(req.valor());
         preco.setDataAlteracao(req.dataAlteracao());
         preco.setHoraAlteracao(req.horaAlteracao());
-        repository.save(preco);
+        preco = repository.save(preco);
         return mapToResponse(preco);
     }
 
-    // Atualização parcial
     public PrecoResponse patch(long id, PrecoRequest req) {
         Preco preco = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Preço não encontrado"));
         if (req.valor() != null) preco.setValor(req.valor());
         if (req.dataAlteracao() != null) preco.setDataAlteracao(req.dataAlteracao());
         if (req.horaAlteracao() != null) preco.setHoraAlteracao(req.horaAlteracao());
-        repository.save(preco);
+        preco = repository.save(preco);
         return mapToResponse(preco);
     }
 
-    // Deletar
     public boolean delete(long id) {
         Optional<Preco> precoOpt = repository.findById(id);
         if (precoOpt.isPresent()) {

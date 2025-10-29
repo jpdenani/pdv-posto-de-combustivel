@@ -6,7 +6,7 @@ public enum TipoEstoque {
     FALTA("Indisponível"),
     CRITICO("Crítico"),
     BAIXO("Baixo"),
-    MÉDIO("Disponível");
+    MEDIO("Disponível");
 
     private final String descricao;
 

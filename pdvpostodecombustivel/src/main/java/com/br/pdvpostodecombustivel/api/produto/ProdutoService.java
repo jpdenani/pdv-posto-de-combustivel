@@ -20,30 +20,28 @@ public class ProdutoService {
         this.repository = repository;
     }
 
-    // Criar produto
     public ProdutoResponse create(ProdutoRequest req) {
-        Produto produto = new Produto(req.nome(), req.referencia(), req.categoria(), req.fornecedor(), req.marca(), req.TipoProduto());
-        repository.save(produto);
+        // ✅ CORRIGIDO: era req.TipoProduto() (com T maiúsculo), agora é tipoProduto()
+        Produto produto = new Produto(req.nome(), req.referencia(), req.categoria(),
+                req.fornecedor(), req.marca(), req.tipoProduto());
+        produto = repository.save(produto); // ✅ Pega o retorno do save
         return mapToResponse(produto);
     }
 
-    // Buscar por id
     public ProdutoResponse getById(long id) {
         Produto produto = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
         return mapToResponse(produto);
     }
 
-    // Listar produtos com paginação e ordenação
     public List<ProdutoResponse> list(int page, int size, String sortBy, Sort.Direction dir) {
         return repository.findAll(Sort.by(dir, sortBy)).stream()
-                .skip(page * size)
+                .skip((long) page * size)
                 .limit(size)
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Atualizar produto
     public ProdutoResponse update(long id, ProdutoRequest req) {
         Produto produto = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
@@ -52,12 +50,11 @@ public class ProdutoService {
         produto.setCategoria(req.categoria());
         produto.setFornecedor(req.fornecedor());
         produto.setMarca(req.marca());
-        produto.setTipoProduto(req.TipoProduto());
-        repository.save(produto);
+        produto.setTipoProduto(req.tipoProduto()); // ✅ CORRIGIDO
+        produto = repository.save(produto);
         return mapToResponse(produto);
     }
 
-    // Atualização parcial
     public ProdutoResponse patch(long id, ProdutoRequest req) {
         Produto produto = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
@@ -66,12 +63,11 @@ public class ProdutoService {
         if (req.categoria() != null) produto.setCategoria(req.categoria());
         if (req.fornecedor() != null) produto.setFornecedor(req.fornecedor());
         if (req.marca() != null) produto.setMarca(req.marca());
-        if (req.TipoProduto() != null) produto.setTipoProduto(req.TipoProduto());
-        repository.save(produto);
+        if (req.tipoProduto() != null) produto.setTipoProduto(req.tipoProduto()); // ✅ CORRIGIDO
+        produto = repository.save(produto);
         return mapToResponse(produto);
     }
 
-    // Deletar produto
     public boolean delete(long id) {
         Optional<Produto> produtoOpt = repository.findById(id);
         if (produtoOpt.isPresent()) {
@@ -82,6 +78,7 @@ public class ProdutoService {
     }
 
     private ProdutoResponse mapToResponse(Produto p) {
-        return new ProdutoResponse(p.getId(), p.getNome(), p.getReferencia(), p.getCategoria(), p.getFornecedor(), p.getMarca(), p.getTipoProduto());
+        return new ProdutoResponse(p.getId(), p.getNome(), p.getReferencia(),
+                p.getCategoria(), p.getFornecedor(), p.getMarca(), p.getTipoProduto());
     }
 }

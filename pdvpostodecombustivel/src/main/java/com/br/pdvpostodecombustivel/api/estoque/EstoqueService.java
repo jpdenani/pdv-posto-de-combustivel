@@ -20,7 +20,6 @@ public class EstoqueService {
         this.repository = repository;
     }
 
-    // Criar novo estoque
     public EstoqueResponse create(EstoqueRequest req) {
         Estoque estoque = new Estoque(
                 req.quantidade(),
@@ -30,27 +29,24 @@ public class EstoqueService {
                 req.dataValidade(),
                 req.tipoEstoque()
         );
-        repository.save(estoque);
+        estoque = repository.save(estoque); // ✅ Agora pega o retorno do save
         return mapToResponse(estoque);
     }
 
-    // Buscar por id
     public EstoqueResponse getById(long id) {
         Estoque estoque = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
         return mapToResponse(estoque);
     }
 
-    // Listar estoques com paginação simples
     public List<EstoqueResponse> list(int page, int size, String sortBy, Sort.Direction dir) {
         return repository.findAll(Sort.by(dir, sortBy)).stream()
-                .skip(page * size)
+                .skip((long) page * size)
                 .limit(size)
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Atualizar estoque
     public EstoqueResponse update(long id, EstoqueRequest req) {
         Estoque estoque = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
@@ -60,11 +56,10 @@ public class EstoqueService {
         estoque.setLoteFabricacao(req.loteFabricacao());
         estoque.setDataValidade(req.dataValidade());
         estoque.setTipoEstoque(req.tipoEstoque());
-        repository.save(estoque);
+        estoque = repository.save(estoque); // ✅ Agora pega o retorno do save
         return mapToResponse(estoque);
     }
 
-    // Atualização parcial
     public EstoqueResponse patch(long id, EstoqueRequest req) {
         Estoque estoque = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
@@ -74,11 +69,10 @@ public class EstoqueService {
         if (req.loteFabricacao() != null) estoque.setLoteFabricacao(req.loteFabricacao());
         if (req.dataValidade() != null) estoque.setDataValidade(req.dataValidade());
         if (req.tipoEstoque() != null) estoque.setTipoEstoque(req.tipoEstoque());
-        repository.save(estoque);
+        estoque = repository.save(estoque); // ✅ Agora pega o retorno do save
         return mapToResponse(estoque);
     }
 
-    // Deletar por id
     public boolean delete(long id) {
         Optional<Estoque> estoqueOpt = repository.findById(id);
         if (estoqueOpt.isPresent()) {
@@ -88,7 +82,6 @@ public class EstoqueService {
         return false;
     }
 
-    // Mapeia a entidade para DTO
     private EstoqueResponse mapToResponse(Estoque e) {
         return new EstoqueResponse(
                 e.getId(),

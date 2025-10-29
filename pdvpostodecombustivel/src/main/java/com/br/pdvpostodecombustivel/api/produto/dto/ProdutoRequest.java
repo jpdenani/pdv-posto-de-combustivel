@@ -8,6 +8,6 @@ public record ProdutoRequest(
         String fornecedor,
         String categoria,
         String nome,
-        TipoProduto TipoProduto
+        TipoProduto tipoProduto
 ) {
 }

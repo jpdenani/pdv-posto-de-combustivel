@@ -1,11 +1,12 @@
 package com.br.pdvpostodecombustivel.api.preco.dto;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 public record PrecoResponse(
         Long id,
         BigDecimal valor,
-        String dataAlteracao,
-        Date horaAlteracao
-){}
+        LocalDate dataAlteracao,
+        LocalTime horaAlteracao
+) {}

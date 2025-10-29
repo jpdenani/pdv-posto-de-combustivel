@@ -3,8 +3,8 @@ package com.br.pdvpostodecombustivel.enums;
 public enum TipoProduto {
 
 
-    GASOLINACOMUM("Gasolina Comum"),
-    GASOLINAADITIVADA("Gasolina Aditivada"),
+    COMUM("Gasolina Comum"),
+    ADITIVADA("Gasolina Aditivada"),
     ETANOL("Etanol Hidratado"),
     DIESELS10("Diesel S10");
 

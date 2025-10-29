@@ -1,53 +1,62 @@
 package com.br.pdvpostodecombustivel.api.domain.entity;
 
 import jakarta.persistence.*;
-
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Entity
-
-@Table(name = "pessoa")
-
+@Table(name = "preco") // ❌ ESTAVA "pessoa" - CORRIGIDO!
 public class Preco {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal valor;
+
     @Column(nullable = false)
+    private LocalDate dataAlteracao; // ✅ LocalDate ao invés de String
 
-    private BigDecimal valor ;
-    @Column(length = 8, nullable = false)
-
-    private String dataAlteracao;
     @Column(nullable = false)
+    private LocalTime horaAlteracao; // ✅ LocalTime ao invés de Date
 
-    private Date horaAlteracao;
+    // ✅ CONSTRUTOR VAZIO (JPA precisa!)
+    public Preco() {}
 
-    public Preco (BigDecimal valor, String dataAlteracao, Date horaAlteracao){
+    public Preco(BigDecimal valor, LocalDate dataAlteracao, LocalTime horaAlteracao) {
         this.valor = valor;
         this.dataAlteracao = dataAlteracao;
         this.horaAlteracao = horaAlteracao;
     }
 
-    public long getId() {
+    // Getters e Setters
+    public Long getId() {
         return id;
     }
 
-    public BigDecimal getValor(){
+    public BigDecimal getValor() {
         return valor;
     }
-    public void setValor(BigDecimal valor){
+
+    public void setValor(BigDecimal valor) {
         this.valor = valor;
     }
-    public String getDataAlteracao(){
+
+    public LocalDate getDataAlteracao() {
         return dataAlteracao;
     }
-    public void setDataAlteracao(String dataAlteracao){
+
+    public void setDataAlteracao(LocalDate dataAlteracao) {
         this.dataAlteracao = dataAlteracao;
     }
-    public Date getHoraAlteracao(){
+
+    public LocalTime getHoraAlteracao() {
         return horaAlteracao;
     }
-    public void setHoraAlteracao(Date horaAlteracao){
+
+    public void setHoraAlteracao(LocalTime horaAlteracao) {
         this.horaAlteracao = horaAlteracao;
     }
 }
