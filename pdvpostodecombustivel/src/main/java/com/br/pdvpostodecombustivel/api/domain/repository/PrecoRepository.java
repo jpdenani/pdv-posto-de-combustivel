@@ -10,6 +10,7 @@ import java.util.Optional;
 
 public interface PrecoRepository extends JpaRepository<Preco, Long> {
     Optional<Preco> findByValor(BigDecimal valor);
+    Optional<Preco> findFirstByOrderByDataAlteracaoDesc();
     List<Preco> findByDataAlteracao(LocalDate dataAlteracao);
     boolean existsByValor(BigDecimal valor);
 }
