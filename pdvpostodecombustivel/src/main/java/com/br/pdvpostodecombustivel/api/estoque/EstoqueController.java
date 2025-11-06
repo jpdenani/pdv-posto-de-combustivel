@@ -2,7 +2,6 @@ package com.br.pdvpostodecombustivel.api.estoque;
 
 import com.br.pdvpostodecombustivel.api.estoque.dto.EstoqueRequest;
 import com.br.pdvpostodecombustivel.api.estoque.dto.EstoqueResponse;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,51 +9,61 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/estoques")
+@RequestMapping("/api/v1/estoques")
+@CrossOrigin(origins = "*")
 public class EstoqueController {
 
-    private final EstoqueService service;
+    private final EstoqueService estoqueService;
 
-    public EstoqueController(EstoqueService service) {
-        this.service = service;
+    public EstoqueController(EstoqueService estoqueService) {
+        this.estoqueService = estoqueService;
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public EstoqueResponse create(@RequestBody EstoqueRequest req) {
-        return service.create(req);
-    }
-
-    @GetMapping("/{id}")
-    public EstoqueResponse get(@PathVariable long id) {
-        return service.getById(id);
-    }
-
-    @GetMapping
-    public List<EstoqueResponse> list(@RequestParam(defaultValue = "0") int page,
-                                      @RequestParam(defaultValue = "10") int size,
-                                      @RequestParam(defaultValue = "id") String sortBy,
-                                      @RequestParam(defaultValue = "ASC") Sort.Direction dir) {
-        return service.list(page, size, sortBy, dir);
+    public ResponseEntity<EstoqueResponse> criar(@RequestBody EstoqueRequest request) {
+        try {
+            EstoqueResponse response = estoqueService.criar(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
-    public EstoqueResponse update(@PathVariable long id, @RequestBody EstoqueRequest req) {
-        return service.update(id, req);
-    }
-
-    @PatchMapping("/{id}")
-    public EstoqueResponse patch(@PathVariable long id, @RequestBody EstoqueRequest req) {
-        return service.patch(id, req);
+    public ResponseEntity<EstoqueResponse> atualizar(
+            @PathVariable Long id,
+            @RequestBody EstoqueRequest request) {
+        try {
+            EstoqueResponse response = estoqueService.atualizar(id, request);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        boolean excluido = service.delete(id);
-        if (excluido) {
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        try {
+            estoqueService.deletar(id);
             return ResponseEntity.noContent().build();
-        } else {
+        } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EstoqueResponse> buscarPorId(@PathVariable Long id) {
+        try {
+            EstoqueResponse response = estoqueService.buscarPorId(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EstoqueResponse>> listarTodos() {
+        List<EstoqueResponse> estoques = estoqueService.listarTodos();
+        return ResponseEntity.ok(estoques);
     }
 }

@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(name = "preco") // ❌ ESTAVA "pessoa" - CORRIGIDO!
+@Table(name = "preco")
 public class Preco {
 
     @Id
@@ -17,18 +17,30 @@ public class Preco {
     private BigDecimal valor;
 
     @Column(nullable = false)
-    private LocalDate dataAlteracao; // ✅ LocalDate ao invés de String
+    private LocalDate dataAlteracao;
 
     @Column(nullable = false)
-    private LocalTime horaAlteracao; // ✅ LocalTime ao invés de Date
+    private LocalTime horaAlteracao;
 
-    // ✅ CONSTRUTOR VAZIO (JPA precisa!)
+    // ✅ NOVO: Relacionamento com Produto
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "produto_id")
+    private Produto produto;
+
     public Preco() {}
 
     public Preco(BigDecimal valor, LocalDate dataAlteracao, LocalTime horaAlteracao) {
         this.valor = valor;
         this.dataAlteracao = dataAlteracao;
         this.horaAlteracao = horaAlteracao;
+    }
+
+    // ✅ NOVO: Construtor com produto
+    public Preco(BigDecimal valor, LocalDate dataAlteracao, LocalTime horaAlteracao, Produto produto) {
+        this.valor = valor;
+        this.dataAlteracao = dataAlteracao;
+        this.horaAlteracao = horaAlteracao;
+        this.produto = produto;
     }
 
     // Getters e Setters
@@ -58,5 +70,14 @@ public class Preco {
 
     public void setHoraAlteracao(LocalTime horaAlteracao) {
         this.horaAlteracao = horaAlteracao;
+    }
+
+    // ✅ NOVO: Getter e Setter do produto
+    public Produto getProduto() {
+        return produto;
+    }
+
+    public void setProduto(Produto produto) {
+        this.produto = produto;
     }
 }

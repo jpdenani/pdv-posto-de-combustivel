@@ -1,3 +1,4 @@
+
 package com.br.pdvpostodecombustivel.api.estoque.dto;
 
 import com.br.pdvpostodecombustivel.enums.TipoEstoque;
@@ -12,6 +13,8 @@ public record EstoqueResponse(
         String localEndereco,
         String loteFabricacao,
         Date dataValidade,
-        TipoEstoque tipoEstoque
+        TipoEstoque tipoEstoque,
+        BigDecimal capacidadeMaxima,    // ✅ Sempre 150.000
+        BigDecimal percentualEstoque    // ✅ % atual do estoque
 ) {
 }

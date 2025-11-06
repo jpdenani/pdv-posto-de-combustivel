@@ -9,10 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
-
-    // ✅ CORRETO: Busca por TipoEstoque (que existe na entidade Estoque)
     Optional<Estoque> findByTipoEstoque(TipoEstoque tipoEstoque);
-
-    // Se você quiser buscar por múltiplos registros do mesmo tipo:
-    // List<Estoque> findByTipoEstoque(TipoEstoque tipoEstoque);
 }

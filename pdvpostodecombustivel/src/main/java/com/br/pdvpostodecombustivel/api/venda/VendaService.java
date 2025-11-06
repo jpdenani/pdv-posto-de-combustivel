@@ -12,7 +12,6 @@ import com.br.pdvpostodecombustivel.api.domain.repository.ProdutoRepository;
 import com.br.pdvpostodecombustivel.api.domain.repository.VendaRepository;
 import com.br.pdvpostodecombustivel.api.venda.dto.VendaRequest;
 import com.br.pdvpostodecombustivel.api.venda.dto.VendaResponse;
-import com.br.pdvpostodecombustivel.enums.TipoEstoque;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,38 +41,38 @@ public class VendaService {
 
     @Transactional
     public VendaResponse realizarVenda(VendaRequest req) {
-        // Busca bomba
+        // 1. Busca bomba
         Bomba bomba = bombaRepository.findById(req.bombaId())
                 .orElseThrow(() -> new RuntimeException("Bomba não encontrada"));
 
-        // Busca produto
+        // 2. Busca produto
         Produto produto = produtoRepository.findById(req.produtoId())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        // Busca preço mais recente do produto
-        Preco preco = precoRepository.findFirstByOrderByDataAlteracaoDesc()
-                .orElseThrow(() -> new RuntimeException("Preço não encontrado"));
+        // 3. Busca preço pelo mesmo ID do produto (ID 1 = ID 1)
+        Preco preco = precoRepository.findById(req.produtoId())
+                .orElseThrow(() -> new RuntimeException("Preço não encontrado para o produto ID: " + req.produtoId()));
 
-        // Busca estoque do produto
-        TipoEstoque tipoEstoque = TipoEstoque.valueOf(produto.getTipoProduto().name());
-        Estoque estoque = estoqueRepository.findByTipoEstoque(tipoEstoque)
-                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para " + tipoEstoque));
+        // 4. ✅ Busca estoque pelo mesmo ID do produto (ID 1 = ID 1)
+        Estoque estoque = estoqueRepository.findById(req.produtoId())
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto ID: " + req.produtoId()));
 
-        // Verifica se tem estoque suficiente
-        if (estoque.getQuantidade().compareTo(req.litros()) < 0) {
-            throw new RuntimeException("Estoque insuficiente");
+        // 5. ✅ Subtrai do estoque (valida quantidade e atualiza tipo automaticamente)
+        try {
+            estoque.subtrairQuantidade(req.litros());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Erro ao processar venda: " + e.getMessage());
         }
 
-        // Calcula valor total
+        // 6. Calcula valor total
         BigDecimal valorTotal = preco.getValor().multiply(req.litros());
 
-        // Cria a venda
+        // 7. Cria a venda
         Venda venda = new Venda(bomba, produto, req.litros(), preco.getValor(),
                 valorTotal, LocalDateTime.now(), req.usuarioVendedor());
         venda = vendaRepository.save(venda);
 
-        // Baixa do estoque
-        estoque.setQuantidade(estoque.getQuantidade().subtract(req.litros()));
+        // 8. ✅ Salva estoque atualizado (quantidade subtraída + tipo recalculado)
         estoqueRepository.save(estoque);
 
         return mapToResponse(venda);
