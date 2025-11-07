@@ -15,31 +15,37 @@ public class Estoque {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // ✅ Relacionamento com Produto
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "produto_id", nullable = false)
+    private Produto produto;
+
+    @NotNull
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal quantidade;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 100)
     private String localTanque;
 
-    @Column(length = 100, nullable = false)
+    @Column(length = 255)
     private String localEndereco;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 50)
     private String loteFabricacao;
 
     @Temporal(TemporalType.DATE)
-    @Column(nullable = false)
     private Date dataValidade;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_estoque", nullable = false, length = 20)
+    @Column(length = 20)
     private TipoEstoque tipoEstoque;
 
-    // ✅ Capacidade máxima FIXA (não vai no banco)
-    private static final BigDecimal CAPACIDADE_MAXIMA = new BigDecimal("150000.00");
+    @Column(precision = 10, scale = 2)
+    private BigDecimal capacidadeMaxima = new BigDecimal("150000.00");
 
-    // Construtores
+    @Column(precision = 5, scale = 2)
+    private BigDecimal percentualEstoque;
+
     public Estoque() {}
 
     public Estoque(BigDecimal quantidade, String localTanque, String localEndereco,
@@ -50,88 +56,124 @@ public class Estoque {
         this.loteFabricacao = loteFabricacao;
         this.dataValidade = dataValidade;
         this.tipoEstoque = tipoEstoque;
+        this.capacidadeMaxima = new BigDecimal("150000.00");
+        atualizarTipo();
     }
 
-    // ✅ Calcula tipo baseado na % (0-20% CRITICO, 20-45% BAIXO, 45-75% MEDIO, 75-100% ALTO)
+    // ✅ Atualiza o tipo baseado no percentual
     public void atualizarTipo() {
-        if (quantidade == null) {
-            this.tipoEstoque = TipoEstoque.CRITICO;
+        if (quantidade == null || capacidadeMaxima == null || capacidadeMaxima.compareTo(BigDecimal.ZERO) == 0) {
+            this.percentualEstoque = BigDecimal.ZERO;
+            this.tipoEstoque = TipoEstoque.BAIXO;
             return;
         }
 
-        BigDecimal percentual = quantidade
+        this.percentualEstoque = quantidade
+                .divide(capacidadeMaxima, 4, RoundingMode.HALF_UP)
                 .multiply(new BigDecimal("100"))
-                .divide(CAPACIDADE_MAXIMA, 2, RoundingMode.HALF_UP);
+                .setScale(2, RoundingMode.HALF_UP);
 
-        if (percentual.compareTo(new BigDecimal("20")) < 0) {
-            this.tipoEstoque = TipoEstoque.CRITICO;
-        } else if (percentual.compareTo(new BigDecimal("45")) < 0) {
-            this.tipoEstoque = TipoEstoque.BAIXO;
-        } else if (percentual.compareTo(new BigDecimal("75")) < 0) {
+        if (percentualEstoque.compareTo(new BigDecimal("70")) >= 0) {
+            this.tipoEstoque = TipoEstoque.ALTO;
+        } else if (percentualEstoque.compareTo(new BigDecimal("30")) >= 0) {
             this.tipoEstoque = TipoEstoque.MEDIO;
         } else {
-            this.tipoEstoque = TipoEstoque.ALTO;
+            this.tipoEstoque = TipoEstoque.BAIXO;
         }
     }
 
     // ✅ Subtrai quantidade (usado nas vendas)
-    public void subtrairQuantidade(BigDecimal valor) {
-        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Valor deve ser maior que zero");
+    public void subtrairQuantidade(BigDecimal litros) {
+        if (litros == null || litros.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new RuntimeException("Quantidade inválida para subtração");
         }
-        if (this.quantidade.compareTo(valor) < 0) {
-            throw new IllegalStateException("Estoque insuficiente! Disponível: " + this.quantidade + " litros");
+
+        if (this.quantidade.compareTo(litros) < 0) {
+            throw new RuntimeException("Estoque insuficiente! Disponível: " + this.quantidade + "L");
         }
-        this.quantidade = this.quantidade.subtract(valor);
+
+        this.quantidade = this.quantidade.subtract(litros);
         atualizarTipo();
-    }
-
-    // ✅ Adiciona quantidade (reabastecimento)
-    public void adicionarQuantidade(BigDecimal valor) {
-        if (valor == null || valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Valor deve ser maior que zero");
-        }
-        BigDecimal novaQuantidade = this.quantidade.add(valor);
-        if (novaQuantidade.compareTo(CAPACIDADE_MAXIMA) > 0) {
-            throw new IllegalStateException("Capacidade máxima excedida! Máximo: 150.000 litros");
-        }
-        this.quantidade = novaQuantidade;
-        atualizarTipo();
-    }
-
-    // ✅ Retorna capacidade máxima
-    public BigDecimal getCapacidadeMaxima() {
-        return CAPACIDADE_MAXIMA;
-    }
-
-    // ✅ Retorna percentual de estoque
-    public BigDecimal getPercentualEstoque() {
-        if (quantidade == null) return BigDecimal.ZERO;
-        return quantidade.multiply(new BigDecimal("100"))
-                .divide(CAPACIDADE_MAXIMA, 2, RoundingMode.HALF_UP);
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-
-    public BigDecimal getQuantidade() { return quantidade; }
-    public void setQuantidade(BigDecimal quantidade) {
-        this.quantidade = quantidade;
-        atualizarTipo();
+    public Long getId() {
+        return id;
     }
 
-    public String getLocalTanque() { return localTanque; }
-    public void setLocalTanque(String localTanque) { this.localTanque = localTanque; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getLocalEndereco() { return localEndereco; }
-    public void setLocalEndereco(String localEndereco) { this.localEndereco = localEndereco; }
+    public Produto getProduto() {
+        return produto;
+    }
 
-    public String getLoteFabricacao() { return loteFabricacao; }
-    public void setLoteFabricacao(String loteFabricacao) { this.loteFabricacao = loteFabricacao; }
+    public void setProduto(Produto produto) {
+        this.produto = produto;
+    }
 
-    public Date getDataValidade() { return dataValidade; }
-    public void setDataValidade(Date dataValidade) { this.dataValidade = dataValidade; }
+    public BigDecimal getQuantidade() {
+        return quantidade;
+    }
 
-    public TipoEstoque getTipoEstoque() { return tipoEstoque; }
-    public void setTipoEstoque(TipoEstoque tipoEstoque) { this.tipoEstoque = tipoEstoque; }
+    public void setQuantidade(BigDecimal quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public String getLocalTanque() {
+        return localTanque;
+    }
+
+    public void setLocalTanque(String localTanque) {
+        this.localTanque = localTanque;
+    }
+
+    public String getLocalEndereco() {
+        return localEndereco;
+    }
+
+    public void setLocalEndereco(String localEndereco) {
+        this.localEndereco = localEndereco;
+    }
+
+    public String getLoteFabricacao() {
+        return loteFabricacao;
+    }
+
+    public void setLoteFabricacao(String loteFabricacao) {
+        this.loteFabricacao = loteFabricacao;
+    }
+
+    public Date getDataValidade() {
+        return dataValidade;
+    }
+
+    public void setDataValidade(Date dataValidade) {
+        this.dataValidade = dataValidade;
+    }
+
+    public TipoEstoque getTipoEstoque() {
+        return tipoEstoque;
+    }
+
+    public void setTipoEstoque(TipoEstoque tipoEstoque) {
+        this.tipoEstoque = tipoEstoque;
+    }
+
+    public BigDecimal getCapacidadeMaxima() {
+        return capacidadeMaxima;
+    }
+
+    public void setCapacidadeMaxima(BigDecimal capacidadeMaxima) {
+        this.capacidadeMaxima = capacidadeMaxima;
+    }
+
+    public BigDecimal getPercentualEstoque() {
+        return percentualEstoque;
+    }
+
+    public void setPercentualEstoque(BigDecimal percentualEstoque) {
+        this.percentualEstoque = percentualEstoque;
+    }
 }

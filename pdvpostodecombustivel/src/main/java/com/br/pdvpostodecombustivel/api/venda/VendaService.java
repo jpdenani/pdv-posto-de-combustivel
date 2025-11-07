@@ -49,19 +49,20 @@ public class VendaService {
         Produto produto = produtoRepository.findById(req.produtoId())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        // 3. Busca preço pelo mesmo ID do produto (ID 1 = ID 1)
+        // 3. Busca preço do produto
         Preco preco = precoRepository.findById(req.produtoId())
-                .orElseThrow(() -> new RuntimeException("Preço não encontrado para o produto ID: " + req.produtoId()));
+                .orElseThrow(() -> new RuntimeException("Preço não encontrado para o produto: " + produto.getNome()));
 
-        // 4. ✅ Busca estoque pelo mesmo ID do produto (ID 1 = ID 1)
-        Estoque estoque = estoqueRepository.findById(req.produtoId())
-                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto ID: " + req.produtoId()));
+        // 4. ✅ BUSCA ESTOQUE PELO PRODUTO (não mais pelo ID direto)
+        Estoque estoque = estoqueRepository.findByProdutoId(req.produtoId())
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto: " + produto.getNome()));
 
-        // 5. ✅ Subtrai do estoque (valida quantidade e atualiza tipo automaticamente)
+        // 5. ✅ VALIDA E SUBTRAI DO ESTOQUE
         try {
             estoque.subtrairQuantidade(req.litros());
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Erro ao processar venda: " + e.getMessage());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // Re-lança erros de validação (quantidade inválida ou estoque insuficiente)
+            throw new RuntimeException(e.getMessage());
         }
 
         // 6. Calcula valor total
@@ -70,9 +71,11 @@ public class VendaService {
         // 7. Cria a venda
         Venda venda = new Venda(bomba, produto, req.litros(), preco.getValor(),
                 valorTotal, LocalDateTime.now(), req.usuarioVendedor());
+
+        // 8. ✅ SALVA A VENDA
         venda = vendaRepository.save(venda);
 
-        // 8. ✅ Salva estoque atualizado (quantidade subtraída + tipo recalculado)
+        // 9. ✅ SALVA O ESTOQUE ATUALIZADO (com quantidade subtraída e tipo recalculado)
         estoqueRepository.save(estoque);
 
         return mapToResponse(venda);
