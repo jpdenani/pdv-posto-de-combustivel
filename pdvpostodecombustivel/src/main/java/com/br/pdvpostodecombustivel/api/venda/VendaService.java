@@ -41,38 +41,41 @@ public class VendaService {
 
     @Transactional
     public VendaResponse realizarVenda(VendaRequest req) {
-        // 1. Busca bomba
+
         Bomba bomba = bombaRepository.findById(req.bombaId())
                 .orElseThrow(() -> new RuntimeException("Bomba não encontrada"));
 
-        // 2. Busca produto
+
         Produto produto = produtoRepository.findById(req.produtoId())
                 .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
 
-        // 3. Busca preço pelo mesmo ID do produto (ID 1 = ID 1)
+
         Preco preco = precoRepository.findById(req.produtoId())
-                .orElseThrow(() -> new RuntimeException("Preço não encontrado para o produto ID: " + req.produtoId()));
+                .orElseThrow(() -> new RuntimeException("Preço não encontrado para o produto: " + produto.getNome()));
 
-        // 4. ✅ Busca estoque pelo mesmo ID do produto (ID 1 = ID 1)
-        Estoque estoque = estoqueRepository.findById(req.produtoId())
-                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto ID: " + req.produtoId()));
 
-        // 5. ✅ Subtrai do estoque (valida quantidade e atualiza tipo automaticamente)
+        Estoque estoque = estoqueRepository.findByProdutoId(req.produtoId())
+                .orElseThrow(() -> new RuntimeException("Estoque não encontrado para o produto: " + produto.getNome()));
+
+
         try {
             estoque.subtrairQuantidade(req.litros());
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Erro ao processar venda: " + e.getMessage());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // Re-lança erros de validação (quantidade inválida ou estoque insuficiente)
+            throw new RuntimeException(e.getMessage());
         }
 
-        // 6. Calcula valor total
+
         BigDecimal valorTotal = preco.getValor().multiply(req.litros());
 
-        // 7. Cria a venda
+
         Venda venda = new Venda(bomba, produto, req.litros(), preco.getValor(),
                 valorTotal, LocalDateTime.now(), req.usuarioVendedor());
+
+
         venda = vendaRepository.save(venda);
 
-        // 8. ✅ Salva estoque atualizado (quantidade subtraída + tipo recalculado)
+
         estoqueRepository.save(estoque);
 
         return mapToResponse(venda);

@@ -15,9 +15,9 @@ public interface PrecoRepository extends JpaRepository<Preco, Long> {
     List<Preco> findByDataAlteracao(LocalDate dataAlteracao);
     boolean existsByValor(BigDecimal valor);
 
-    // ✅ NOVO: Busca o preço mais recente de um produto específico
+
     Optional<Preco> findFirstByProdutoOrderByDataAlteracaoDescHoraAlteracaoDesc(Produto produto);
 
-    // ✅ NOVO: Busca o preço mais recente pelo ID do produto
+
     Optional<Preco> findFirstByProduto_IdOrderByDataAlteracaoDescHoraAlteracaoDesc(Long produtoId);
 }

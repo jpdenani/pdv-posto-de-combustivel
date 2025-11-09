@@ -43,7 +43,7 @@ public class Produto {
         this.tipoProduto = tipoProduto;
     }
 
-    // Getters e Setters
+
     public Long getId() {
         return id;
     }

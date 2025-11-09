@@ -1,4 +1,4 @@
-// ========== AcessoController.java ==========
+
 package com.br.pdvpostodecombustivel.api.acesso;
 
 import com.br.pdvpostodecombustivel.api.domain.entity.Acesso;

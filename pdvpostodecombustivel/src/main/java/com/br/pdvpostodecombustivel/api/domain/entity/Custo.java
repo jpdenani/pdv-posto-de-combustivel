@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(name = "custo") // ❌ ESTAVA "pessoa" - CORRIGIDO!
+@Table(name = "custo")
 public class Custo {
 
     @Id
@@ -27,16 +27,21 @@ public class Custo {
     @Column(nullable = false)
     private Date dataProcessamento;
 
-    // ✅ CONSTRUTOR VAZIO (JPA precisa!)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "produto_id", nullable = false)
+    private Produto produto;
+
     public Custo() {}
 
-    // ✅ CONSTRUTOR CORRIGIDO (estava dataProcesasmento)
-    public Custo(Double imposto, Double custoVariavel, Double custoFixo, Double margemLucro, Date dataProcessamento) {
+    public Custo(Double imposto, Double custoVariavel, Double custoFixo, Double margemLucro,
+                 Date dataProcessamento, Produto produto) {
         this.imposto = imposto;
         this.custoVariavel = custoVariavel;
         this.custoFixo = custoFixo;
         this.margemLucro = margemLucro;
         this.dataProcessamento = dataProcessamento;
+        this.produto = produto;
     }
 
     // Getters e Setters
@@ -48,7 +53,6 @@ public class Custo {
         return imposto;
     }
 
-    // ✅ CORRIGIDO: era setNome, agora é setImposto
     public void setImposto(Double imposto) {
         this.imposto = imposto;
     }
@@ -83,5 +87,13 @@ public class Custo {
 
     public void setDataProcessamento(Date dataProcessamento) {
         this.dataProcessamento = dataProcessamento;
+    }
+
+    public Produto getProduto() {
+        return produto;
+    }
+
+    public void setProduto(Produto produto) {
+        this.produto = produto;
     }
 }

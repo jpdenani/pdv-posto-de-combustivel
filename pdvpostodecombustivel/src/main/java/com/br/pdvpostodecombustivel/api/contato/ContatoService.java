@@ -20,7 +20,7 @@ public class ContatoService {
         this.repository = repository;
     }
 
-    // ✅ ORDEM CORRIGIDA: telefone, email, endereco
+
     public ContatoResponse create(ContatoRequest req) {
         Contato contato = new Contato(req.telefone(), req.email(), req.endereco());
         contato = repository.save(contato);

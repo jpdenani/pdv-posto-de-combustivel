@@ -21,10 +21,10 @@ public class ProdutoService {
     }
 
     public ProdutoResponse create(ProdutoRequest req) {
-        // ✅ CORRIGIDO: era req.TipoProduto() (com T maiúsculo), agora é tipoProduto()
+
         Produto produto = new Produto(req.nome(), req.referencia(), req.categoria(),
                 req.fornecedor(), req.marca(), req.tipoProduto());
-        produto = repository.save(produto); // ✅ Pega o retorno do save
+        produto = repository.save(produto);
         return mapToResponse(produto);
     }
 

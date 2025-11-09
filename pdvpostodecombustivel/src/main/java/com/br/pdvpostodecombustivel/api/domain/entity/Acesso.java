@@ -4,7 +4,7 @@ import com.br.pdvpostodecombustivel.enums.TipoAcesso;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "acesso") // tabela separada da pessoa
+@Table(name = "acesso")
 public class Acesso {
 
     @Id
@@ -29,7 +29,7 @@ public class Acesso {
         this.tipoAcesso = tipoAcesso;
     }
 
-    // Getters e Setters
+
     public Long getId() { return id; }
     public String getUsuario() { return usuario; }
     public void setUsuario(String usuario) { this.usuario = usuario; }

@@ -1,20 +1,19 @@
-
 package com.br.pdvpostodecombustivel.api.estoque.dto;
 
 import com.br.pdvpostodecombustivel.enums.TipoEstoque;
-
 import java.math.BigDecimal;
 import java.util.Date;
 
 public record EstoqueResponse(
         Long id,
+        Long produtoId,
+        String nomeProduto,
         BigDecimal quantidade,
         String localTanque,
         String localEndereco,
         String loteFabricacao,
         Date dataValidade,
         TipoEstoque tipoEstoque,
-        BigDecimal capacidadeMaxima,    // ✅ Sempre 150.000
-        BigDecimal percentualEstoque    // ✅ % atual do estoque
-) {
-}
+        BigDecimal capacidadeMaxima,
+        BigDecimal percentualEstoque
+) {}

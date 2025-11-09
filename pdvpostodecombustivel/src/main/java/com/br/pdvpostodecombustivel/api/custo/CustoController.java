@@ -2,7 +2,6 @@ package com.br.pdvpostodecombustivel.api.custo;
 
 import com.br.pdvpostodecombustivel.api.custo.dto.CustoRequest;
 import com.br.pdvpostodecombustivel.api.custo.dto.CustoResponse;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,21 +30,13 @@ public class CustoController {
     }
 
     @GetMapping
-    public List<CustoResponse> list(@RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "10") int size,
-                                    @RequestParam(defaultValue = "id") String sortBy,
-                                    @RequestParam(defaultValue = "ASC") Sort.Direction dir) {
-        return service.list(page, size, sortBy, dir);
+    public List<CustoResponse> list() {
+        return service.list();
     }
 
     @PutMapping("/{id}")
     public CustoResponse update(@PathVariable long id, @RequestBody CustoRequest req) {
         return service.update(id, req);
-    }
-
-    @PatchMapping("/{id}")
-    public CustoResponse patch(@PathVariable long id, @RequestBody CustoRequest req) {
-        return service.patch(id, req);
     }
 
     @DeleteMapping("/{id}")

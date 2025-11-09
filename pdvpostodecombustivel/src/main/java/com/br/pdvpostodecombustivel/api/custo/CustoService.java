@@ -3,81 +3,116 @@ package com.br.pdvpostodecombustivel.api.custo;
 import com.br.pdvpostodecombustivel.api.custo.dto.CustoRequest;
 import com.br.pdvpostodecombustivel.api.custo.dto.CustoResponse;
 import com.br.pdvpostodecombustivel.api.domain.entity.Custo;
+import com.br.pdvpostodecombustivel.api.domain.entity.Produto;
 import com.br.pdvpostodecombustivel.api.domain.repository.CustoRepository;
-import org.springframework.data.domain.Sort;
+import com.br.pdvpostodecombustivel.api.domain.repository.ProdutoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class CustoService {
 
-    private final CustoRepository repository;
+    @Autowired
+    private CustoRepository repository;
 
-    public CustoService(CustoRepository repository) {
-        this.repository = repository;
-    }
+    @Autowired
+    private ProdutoRepository produtoRepository;
 
+    @Transactional
     public CustoResponse create(CustoRequest req) {
-        Custo custo = new Custo(req.imposto(), req.custoVariavel(), req.custoFixo(),
-                req.margemLucro(), req.dataProcessamento());
+        System.out.println("📦 Criando custo para produto ID: " + req.produtoId());
+
+
+        Produto produto = produtoRepository.findById(req.produtoId())
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado!"));
+
+
+        if (repository.existsByProduto(produto)) {
+            throw new RuntimeException("Já existe um custo cadastrado para este produto!");
+        }
+
+        Custo custo = new Custo(
+                req.imposto(),
+                req.custoVariavel(),
+                req.custoFixo(),
+                req.margemLucro(),
+                req.dataProcessamento(),
+                produto
+        );
+
         custo = repository.save(custo);
-        return new CustoResponse(custo.getId(), custo.getImposto(), custo.getCustoVariavel(),
-                custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
+        System.out.println("✅ Custo criado com sucesso! ID: " + custo.getId());
+
+        return mapToResponse(custo);
     }
 
+    @Transactional(readOnly = true)
     public CustoResponse getById(long id) {
-        Custo custo = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Custo não encontrado"));
-        return new CustoResponse(custo.getId(), custo.getImposto(), custo.getCustoVariavel(),
-                custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
+        Custo custo = repository.findByIdWithProduto(id)
+                .orElseThrow(() -> new RuntimeException("Custo não encontrado!"));
+        return mapToResponse(custo);
     }
 
-    public List<CustoResponse> list(int page, int size, String sortBy, Sort.Direction dir) {
-        return repository.findAll(Sort.by(dir, sortBy)).stream()
-                .skip((long) page * size)
-                .limit(size)
-                .map(c -> new CustoResponse(c.getId(), c.getImposto(), c.getCustoVariavel(),
-                        c.getCustoFixo(), c.getMargemLucro(), c.getDataProcessamento()))
+    @Transactional(readOnly = true)
+    public List<CustoResponse> list() {
+        return repository.findAllWithProduto().stream()
+                .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public CustoResponse update(long id, CustoRequest req) {
+        System.out.println("🔄 Atualizando custo ID: " + id);
+
         Custo custo = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Custo não encontrado"));
-        // ✅ CORRIGIDO: agora usa setImposto ao invés de setNome
+                .orElseThrow(() -> new RuntimeException("Custo não encontrado!"));
+
+
+        if (req.produtoId() != null && !custo.getProduto().getId().equals(req.produtoId())) {
+            Produto novoProduto = produtoRepository.findById(req.produtoId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado!"));
+            custo.setProduto(novoProduto);
+        }
+
         custo.setImposto(req.imposto());
         custo.setCustoVariavel(req.custoVariavel());
         custo.setCustoFixo(req.custoFixo());
         custo.setMargemLucro(req.margemLucro());
         custo.setDataProcessamento(req.dataProcessamento());
+
         custo = repository.save(custo);
-        return new CustoResponse(custo.getId(), custo.getImposto(), custo.getCustoVariavel(),
-                custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
+        System.out.println("✅ Custo atualizado com sucesso!");
+
+        return mapToResponse(custo);
     }
 
-    public CustoResponse patch(long id, CustoRequest req) {
-        Custo custo = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Custo não encontrado"));
-        // ✅ CORRIGIDO: agora usa setImposto ao invés de setNome
-        if (req.imposto() != null) custo.setImposto(req.imposto());
-        if (req.custoVariavel() != null) custo.setCustoVariavel(req.custoVariavel());
-        if (req.custoFixo() != null) custo.setCustoFixo(req.custoFixo());
-        if (req.margemLucro() != null) custo.setMargemLucro(req.margemLucro());
-        if (req.dataProcessamento() != null) custo.setDataProcessamento(req.dataProcessamento());
-        custo = repository.save(custo);
-        return new CustoResponse(custo.getId(), custo.getImposto(), custo.getCustoVariavel(),
-                custo.getCustoFixo(), custo.getMargemLucro(), custo.getDataProcessamento());
-    }
-
+    @Transactional
     public boolean delete(long id) {
-        Optional<Custo> custoOpt = repository.findById(id);
-        if (custoOpt.isPresent()) {
-            repository.delete(custoOpt.get());
-            return true;
+        System.out.println("🗑️ Deletando custo ID: " + id);
+
+        if (!repository.existsById(id)) {
+            return false;
         }
-        return false;
+
+        repository.deleteById(id);
+        System.out.println("✅ Custo deletado com sucesso!");
+        return true;
+    }
+
+    private CustoResponse mapToResponse(Custo custo) {
+        return new CustoResponse(
+                custo.getId(),
+                custo.getProduto().getId(),
+                custo.getProduto().getNome(),
+                custo.getImposto(),
+                custo.getCustoVariavel(),
+                custo.getCustoFixo(),
+                custo.getMargemLucro(),
+                custo.getDataProcessamento()
+        );
     }
 }

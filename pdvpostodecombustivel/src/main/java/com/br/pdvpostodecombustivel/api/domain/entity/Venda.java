@@ -49,7 +49,6 @@ public class Venda {
         this.usuarioVendedor = usuarioVendedor;
     }
 
-    // Getters e Setters
     public Long getId() { return id; }
 
     public Bomba getBomba() { return bomba; }

@@ -3,14 +3,14 @@ package com.br.pdvpostodecombustivel.api.domain.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "contato") // ❌ ESTAVA "pessoa" - CORRIGIDO!
+@Table(name = "contato")
 public class Contato {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 15, nullable = false)
+    @Column(length = 100, nullable = false)
     private String telefone;
 
     @Column(length = 320, nullable = false)
@@ -19,10 +19,10 @@ public class Contato {
     @Column(length = 255, nullable = false)
     private String endereco;
 
-    // ✅ CONSTRUTOR VAZIO (JPA precisa!)
+
     public Contato() {}
 
-    // ✅ CONSTRUTOR CORRIGIDO (estava com nomeCompleto)
+
     public Contato(String telefone, String email, String endereco) {
         this.telefone = telefone;
         this.email = email;

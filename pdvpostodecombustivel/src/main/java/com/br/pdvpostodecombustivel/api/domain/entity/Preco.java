@@ -22,7 +22,7 @@ public class Preco {
     @Column(nullable = false)
     private LocalTime horaAlteracao;
 
-    // ✅ NOVO: Relacionamento com Produto
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "produto_id")
     private Produto produto;
@@ -35,7 +35,7 @@ public class Preco {
         this.horaAlteracao = horaAlteracao;
     }
 
-    // ✅ NOVO: Construtor com produto
+
     public Preco(BigDecimal valor, LocalDate dataAlteracao, LocalTime horaAlteracao, Produto produto) {
         this.valor = valor;
         this.dataAlteracao = dataAlteracao;
@@ -43,7 +43,7 @@ public class Preco {
         this.produto = produto;
     }
 
-    // Getters e Setters
+
     public Long getId() {
         return id;
     }
@@ -72,7 +72,7 @@ public class Preco {
         this.horaAlteracao = horaAlteracao;
     }
 
-    // ✅ NOVO: Getter e Setter do produto
+
     public Produto getProduto() {
         return produto;
     }

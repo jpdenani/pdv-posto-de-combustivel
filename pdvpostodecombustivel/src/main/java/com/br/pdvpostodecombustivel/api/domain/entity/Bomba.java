@@ -25,7 +25,7 @@ public class Bomba {
         this.status = status;
     }
 
-    // Getters e Setters
+    // getters e getters
     public Long getId() { return id; }
 
     public Integer getNumero() { return numero; }

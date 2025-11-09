@@ -1,7 +1,9 @@
 package com.br.pdvpostodecombustivel.api.estoque;
 
 import com.br.pdvpostodecombustivel.api.domain.entity.Estoque;
+import com.br.pdvpostodecombustivel.api.domain.entity.Produto;
 import com.br.pdvpostodecombustivel.api.domain.repository.EstoqueRepository;
+import com.br.pdvpostodecombustivel.api.domain.repository.ProdutoRepository;
 import com.br.pdvpostodecombustivel.api.estoque.dto.EstoqueRequest;
 import com.br.pdvpostodecombustivel.api.estoque.dto.EstoqueResponse;
 import org.springframework.stereotype.Service;
@@ -17,16 +19,21 @@ import java.util.stream.Collectors;
 public class EstoqueService {
 
     private final EstoqueRepository estoqueRepository;
+    private final ProdutoRepository produtoRepository;
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-    public EstoqueService(EstoqueRepository estoqueRepository) {
+    public EstoqueService(EstoqueRepository estoqueRepository, ProdutoRepository produtoRepository) {
         this.estoqueRepository = estoqueRepository;
+        this.produtoRepository = produtoRepository;
     }
 
     @Transactional
     public EstoqueResponse criar(EstoqueRequest req) {
         try {
-            // Converte String para Date
+
+            Produto produto = produtoRepository.findById(req.produtoId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + req.produtoId()));
+
             Date dataValidade = dateFormat.parse(req.dataValidade());
 
             Estoque estoque = new Estoque(
@@ -38,10 +45,11 @@ public class EstoqueService {
                     req.tipoEstoque()
             );
 
-            // ✅ Calcula o tipo automaticamente
-            estoque.atualizarTipo();
 
+            estoque.setProduto(produto);
+            estoque.atualizarTipo();
             estoque = estoqueRepository.save(estoque);
+
             return mapToResponse(estoque);
         } catch (ParseException e) {
             throw new RuntimeException("Data inválida! Use o formato dd/MM/yyyy");
@@ -54,7 +62,13 @@ public class EstoqueService {
             Estoque estoque = estoqueRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Estoque não encontrado"));
 
-            // Converte String para Date
+
+            if (req.produtoId() != null) {
+                Produto produto = produtoRepository.findById(req.produtoId())
+                        .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + req.produtoId()));
+                estoque.setProduto(produto);
+            }
+
             Date dataValidade = dateFormat.parse(req.dataValidade());
 
             estoque.setQuantidade(req.quantidade());
@@ -62,8 +76,6 @@ public class EstoqueService {
             estoque.setLocalEndereco(req.localEndereco());
             estoque.setLoteFabricacao(req.loteFabricacao());
             estoque.setDataValidade(dataValidade);
-
-            // ✅ Recalcula o tipo
             estoque.atualizarTipo();
 
             estoque = estoqueRepository.save(estoque);
@@ -94,16 +106,30 @@ public class EstoqueService {
     }
 
     private EstoqueResponse mapToResponse(Estoque e) {
+
+        String nomeProduto = "Sem produto";
+        Long produtoId = null;
+
+        if (e.getProduto() != null) {
+            produtoId = e.getProduto().getId();
+            nomeProduto = e.getProduto().getNome();
+            System.out.println("✅ Estoque ID: " + e.getId() + ", Produto: " + nomeProduto + " (ID: " + produtoId + ")");
+        } else {
+            System.out.println("⚠️ Estoque ID: " + e.getId() + " não tem produto associado!");
+        }
+
         return new EstoqueResponse(
                 e.getId(),
+                produtoId,
+                nomeProduto,
                 e.getQuantidade(),
                 e.getLocalTanque(),
                 e.getLocalEndereco(),
                 e.getLoteFabricacao(),
                 e.getDataValidade(),
                 e.getTipoEstoque(),
-                e.getCapacidadeMaxima(),    // ✅ 150.000 litros
-                e.getPercentualEstoque()    // ✅ % atual
+                e.getCapacidadeMaxima(),
+                e.getPercentualEstoque()
         );
     }
 }
